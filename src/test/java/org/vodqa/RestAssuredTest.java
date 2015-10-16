@@ -19,19 +19,20 @@ public class RestAssuredTest {
 
   @Before
   public void setUp() {
-    RestAssured.baseURI = "http://localhost:9090";
+    RestAssured.baseURI = "http://localhost:9000";
   }
 
-    @Test
-    public void testStatusCode() {
+  @Test
+  public void testStatusCode() {
 
-      given().
-      when().
-          get("/users").
-      then().
-          assertThat().
-          statusCode(HttpStatus.SC_OK);
-    }
+    given().
+
+    when().
+        get("/users").
+    then().
+        assertThat().
+        statusCode(HttpStatus.SC_OK);
+  }
 
 
   @Test
@@ -74,52 +75,58 @@ public class RestAssuredTest {
         body("userName", hasItems("Jayant2"));
   }
 
-    @Test
-    public void testPutRequest() {
-      int userId = 7;
-      given().log().all().
-          contentType("application/json").
-          when().
-          body("{\"userName\":\"Chris\",\"employer\":\"facebook\",\"location\":{\"state\":\"California\",\"city\":\"San Jose\"}}").
-          then().expect().statusCode(HttpStatus.SC_OK).
-          put("/users/" + userId);
-    }
+  @Test
+  public void testPutRequest() {
+    int userId = 7;
+
+    given().
+        contentType("application/json").
+    when().
+        body("{\"userName\":\"Taylor\",\"employer\":\"facebook\",\"location\":{\"state\":\"California\",\"city\":\"San Jose\"}}").
+        put("/users/" + userId).
+    then().
+        statusCode(HttpStatus.SC_OK).
+        body("userName", equalTo("Taylor"));
+
+  }
 
   @Test
   public void testDeleteRequest() {
-      int userId = 9;
+    int userId = 7;
+    given().
+
+        when().
+        delete("/users/" + userId).
+    then().
+        statusCode(HttpStatus.SC_OK);
+  }
+
+  @Test
+  public void testResponseData() {
+    Response response =
         given().
-            when().
-            delete("/users/" + userId);
-      }
+            contentType(ContentType.JSON).
+        when().
+            get("/users/5").
+        then().
+            extract().response();
 
-    @Test
-    public void testResponseData() {
-        Response response =
-                given().when().
-                        get("/users/5").
-                        then().
-                        contentType(ContentType.JSON).
-                        extract().
-                    response();
+    String userName = response.path("userName");
+    String userCity = response.path("location.city");
 
-        String userName = response.path("userName");
-        String userCity = response.path("location.city");
+    Assert.assertTrue(userName.equals("Steve"));
+    Assert.assertTrue(userCity.equals("San Francisco"));
+  }
 
-      Assert.assertTrue(userName.equals("Steve"));
-      Assert.assertTrue(userCity.equals("San Francisco"));
+  @Test
+  public void testUsingJsonPath() {
+    String json = get("/users/5").asString();
 
-    }
+    JsonPath jsonPath = new JsonPath(json).setRoot("location");
+    String state = jsonPath.getString("state");
+    String city = jsonPath.getString("city");
+    Assert.assertTrue(state.equals("California"));
+    Assert.assertTrue(city.equals("San Francisco"));
 
-    @Test
-    public void testUsingJsonPath() {
-        String json = get("/users/5").asString();
-
-        JsonPath jsonPath = new JsonPath(json).setRoot("location");
-        String state = jsonPath.getString("state");
-      String city = jsonPath.getString("city");
-      Assert.assertTrue(state.equals("California"));
-      Assert.assertTrue(city.equals("San Francisco"));
-
-    }
+  }
 }
