@@ -67,23 +67,23 @@ public class RestAssuredTest {
 
     given().
         contentType("application/json").
-        body("[{\"userName\":\"Jayant2\",\"employer\":\"Google\",\"location\":{\"state\":\"California\",\"city\":\"Mountain View\"}}]").
+        body("[{\"userName\":\"Andy\",\"employer\":\"Google\",\"location\":{\"state\":\"California\",\"city\":\"Mountain View\"}}]").
     when().
         post("/users").
     then().
         assertThat().
-        body("userName", hasItems("Jayant2"));
+        body("userName", hasItems("Andy"));
   }
 
   @Test
   public void testPutRequest() {
-    int userId = 7;
+    int userId = 1;
 
     given().
         contentType("application/json").
     when().
-        body("{\"userName\":\"Taylor\",\"employer\":\"facebook\",\"location\":{\"state\":\"California\",\"city\":\"San Jose\"}}").
-        put("/users/" + userId).
+        body("{\"userName\":\"Taylor\"}").
+            put("/users/" + userId).
     then().
         statusCode(HttpStatus.SC_OK).
         body("userName", equalTo("Taylor"));
