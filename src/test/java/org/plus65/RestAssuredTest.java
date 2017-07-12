@@ -1,4 +1,4 @@
-package org.vodqa;
+package org.plus65;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
